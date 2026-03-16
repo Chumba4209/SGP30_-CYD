@@ -1,0 +1,39 @@
+/*This code is to test the sgp30 b4 integrating with the cyd display. The SGP30 has a warm-up period of about 15 seconds when first powered on. During this time it will return default values of:
+eCO2: 400 ppm (minimum baseline)
+TVOC: 0 ppb
+These are not real readings — they're just the sensor initializing. After about 15-30 seconds you should start seeing real varying values.  
+*/
+
+#include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_SGP30.h>
+
+Adafruit_SGP30 sgp;
+
+void setup() {
+    Serial.begin(115200);
+    Wire.begin(27, 22);
+    
+    if (!sgp.begin()) {
+        Serial.println("SGP30 not found! Check wiring.");
+        while (1);
+    }
+    Serial.println("SGP30 found!");
+}
+
+void loop() {
+    delay(1000);
+    
+    if (!sgp.IAQmeasure()) {
+        Serial.println("Measurement failed!");
+        return;
+    }
+    
+    Serial.print("eCO2: "); 
+    Serial.print(sgp.eCO2); 
+    Serial.println(" ppm");
+    Serial.print("TVOC: "); 
+    Serial.print(sgp.TVOC); 
+    Serial.println(" ppb");
+    Serial.println("---");
+}
